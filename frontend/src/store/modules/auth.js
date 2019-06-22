@@ -1,6 +1,6 @@
-import axios from "axios";
-import { vm } from "../../main";
-import { tokenConfig } from "../utils";
+import axios from "@/instance";
+import { vm } from "@/main";
+// import { tokenConfig } from "../utils";
 
 const state = {
   token: localStorage.getItem("token") || null,
@@ -9,19 +9,21 @@ const state = {
 };
 
 const getters = {
-  isAuthenticated: state => !!state.user,
-  authStatus: state => state.status
+  isAuthenticated: state => !!state.user && !!state.token,
+  authStatus: state => state.status,
+  User: state => state.user,
 };
 
 const actions = {
   loadUser({ commit }) {
     commit("auth_request");
     axios
-      .get("api/auth/user/", tokenConfig(state))
+      .get("/api/auth/user/")
       .then(resp => {
+        console.log(resp.data)
         commit("auth_success", resp.data);
       })
-      .catch(err => {
+      .catch(() => {
         commit("auth_error");
       });
   },
@@ -29,7 +31,7 @@ const actions = {
   login({ commit, dispatch }, user) {
     commit("auth_request");
     axios
-      .post("api/auth/login/", user, tokenConfig(state))
+      .post("/api/auth/login/", user)
       .then(resp => {
         commit("login_success", resp.data);
         vm.$router.replace(vm.$route.query.redirect || { name: "home" });
@@ -48,7 +50,7 @@ const actions = {
   logout({ commit, dispatch }) {
     commit("auth_request");
     axios
-      .post("api/auth/logout/", null, tokenConfig(state))
+      .post("/api/auth/logout/", null)
       .then(() => {
         commit("logout_success");
       })
@@ -64,9 +66,10 @@ const actions = {
 
   register({ commit, dispatch }, user) {
     const body = JSON.stringify(user);
+
     commit("auth_request");
     axios
-      .post("api/auth/register/", body, tokenConfig(state))
+      .post("/api/auth/register/", body)
       .then(resp => {
         commit("register_success", resp.data);
         vm.$router.replace({ name: "home" });
@@ -84,8 +87,8 @@ const actions = {
     const body = JSON.stringify(email);
     commit("auth_request");
     axios
-      .post("api/auth/password/reset/", body, tokenConfig(state))
-      .then(resp => {
+      .post("/api/auth/password/reset/", body)
+      .then(() => {
         commit("password_reset_send");
         vm.$router.replace({ name: "reset_password_commit" });
       })
@@ -102,16 +105,20 @@ const actions = {
     const body = JSON.stringify(data);
     commit("auth_request");
     axios
-      .post("api/auth/password/reset/confirm/", body, tokenConfig(state))
+      .post("/api/auth/password/reset/confirm/", body)
       .then(resp => {
         commit("password_reset_success");
-        console.log('resp',resp);
+        console.log("resp", resp);
         // const msg = {
         //   status: resp.status,
         //   messages: resp.data
         // };
         // dispatch("populateAlert", msg);
-        vm.$vueOnToast.pop("success", "Success", "Password has been reset with the new password.");
+        vm.$vueOnToast.pop(
+          "success",
+          "Success",
+          "Password has been reset with the new password."
+        );
         vm.$router.replace({ name: "login" });
       })
       .catch(err => {

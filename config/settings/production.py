@@ -53,20 +53,25 @@ DATABASES["default"] = env.db("DATABASE_URL")  # noqa F405
 DATABASES["default"]["ATOMIC_REQUESTS"] = True  # noqa F405
 DATABASES["default"]["CONN_MAX_AGE"] = env.int("CONN_MAX_AGE", default=60)  # noqa F405
 
+AUTH_PASSWORD_VALIDATORS = [
+    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
+]
+
 # STATIC
 # ------------------------------------------------------------------------------
 
 STATICFILES_STORAGE = "whitenoise.django.CompressedManifestStaticFilesStorage"
 
-# FRONTEND URLS
-# ------------------------------------------------------------------------------
-FRONTEND_URL = "/"
-# ACCOUNT_EMAIL_CONFIRMATION_URL = FRONTEND_URL + 'verify-email/{}'
-ACCOUNT_PASSWORD_RESET_CONFIRM = FRONTEND_URL + "password/reset/confirm/"
-
 
 # FRONTEND
 # ------------------------------------------------------------------------------
+FRONTEND_URL = env("DJANGO_FRONTEND_URL", default="/")
+# ACCOUNT_EMAIL_CONFIRMATION_URL = FRONTEND_URL + 'verify-email/{}'
+ACCOUNT_PASSWORD_RESET_CONFIRM = FRONTEND_URL + "password/reset/confirm/"
+
 
 WEBPACK_LOADER = {
     "DEFAULT": {

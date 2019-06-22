@@ -1,4 +1,4 @@
-import { vm } from "../../main";
+import { vm } from "@/main";
 import { prepareAlertType } from "../utils";
 
 const state = {

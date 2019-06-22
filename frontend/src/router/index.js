@@ -4,25 +4,10 @@ import Home from "../components/Home.vue";
 import store from "../store";
 import { authRoutes } from "./auth";
 
-// lazy loaded routes
-// https://router.vuejs.org/guide/advanced/lazy-loading.html
-const Hidden = () => import("../components/Hidden.vue");
-// import Hidden from "../components/Hidden.vue";
-
-
 Vue.use(VueRouter);
 
 let routes = [
   { path: "/", name: "home", component: Home },
-  { path: "/index.html", name: "home", component: Home },
-  {
-    path: "/hidden",
-    component: Hidden,
-    name: "hidden",
-    meta: {
-      requiresAuth: true
-    }
-  }
 ];
 
 routes.push(...authRoutes);

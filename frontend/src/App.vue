@@ -2,28 +2,30 @@
   <div id="app">
     <toast-container :toastConfig="customConfig"></toast-container>
     <v-app>
-      <Navbar/>
-       <v-container >
-        <v-content>
+        <Navbar />
+        <v-content app>
           <router-view></router-view>
         </v-content>
-      </v-container>
+        <Footer />
     </v-app>
   </div>
 </template>
 
 <script>
 import Navbar from "./components/Navbar.vue";
+import Footer from "./components/Footer.vue";
 
 import { mapActions } from "vuex";
 
 export default {
   name: "app",
   components: {
-    Navbar
+    Navbar,
+    Footer
   },
   methods: mapActions(["loadUser"]),
-  mounted() {
+
+  created() {
     this.loadUser();
   },
   computed: {
@@ -46,6 +48,9 @@ export default {
 <style >
 @import url("~vue-on-toast/dist/vue-on-toast.css");
 @import url("~vuetify/dist/vuetify.min.css");
+#app{
+  background: #fdfdfd
+}
 
 .toast-container {
   left: 50%;

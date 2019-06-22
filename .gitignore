@@ -306,7 +306,7 @@ TODO.md
 ----------------
 .docs/
 utility/
-README.md
+
 
 !**/migrations
 !**/migrations/__init__.py

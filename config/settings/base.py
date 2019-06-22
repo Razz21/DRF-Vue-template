@@ -1,12 +1,18 @@
 import os
 import environ
 
-env = environ.Env()
 
 ROOT_DIR = environ.Path(__file__) - 3
 FRONTEND_DIR = os.path.join(ROOT_DIR, "frontend")
 
 APPS_DIR = ROOT_DIR.path("project")
+
+env = environ.Env()
+
+READ_DOT_ENV_FILE = env.bool("DJANGO_READ_DOT_ENV_FILE", default=False)
+if READ_DOT_ENV_FILE:
+    # OS environment variables take precedence over variables from .env
+    env.read_env(str(ROOT_DIR.path(".env")))
 
 # GENERAL
 # ------------------------------------------------------------------------------
@@ -29,8 +35,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
-
 
 # URLS
 # ------------------------------------------------------------------------------
@@ -59,6 +63,7 @@ THIRD_PARTY_APPS = [
     "allauth",
     "allauth.account",
     "rest_auth.registration",
+    "django_filters",
 ]
 
 LOCAL_APPS = ["project.users"]
@@ -79,17 +84,6 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-# PASSWORDS
-# ------------------------------------------------------------------------------
-
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
-    },
-    # {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
-    # {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
-    # {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
-]
 
 # TEMPLATES
 # ------------------------------------------------------------------------------
@@ -125,6 +119,12 @@ STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 ]
 
+# MEDIA
+# ------------------------------------------------------------------------------
+# https://docs.djangoproject.com/en/dev/ref/settings/#media-root
+MEDIA_ROOT = str(ROOT_DIR("media"))
+# https://docs.djangoproject.com/en/dev/ref/settings/#media-url
+MEDIA_URL = "/media/"
 
 # AUTHENTICATION
 # ------------------------------------------------------------------------------
@@ -133,9 +133,12 @@ AUTH_USER_MODEL = "users.UserModel"
 # django-allauth
 # ------------------------------------------------------------------------------
 # E-mail address is automatically confirmed by a GET request
-ACCOUNT_CONFIRM_EMAIL_ON_GET = True
+# ACCOUNT_CONFIRM_EMAIL_ON_GET = True
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_EMAIL_REQUIRED = False
 # Allow logins with an unverified e-mail address
 ACCOUNT_EMAIL_VERIFICATION = "none"
+ACCOUNT_AUTHENTICATION_METHOD = "username"
 
 
 # REST_FRAMEWORK
@@ -146,11 +149,18 @@ REST_AUTH_TOKEN_CREATOR = "project.users.utils.create_knox_token"
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework.authentication.SessionAuthentication",
         "knox.auth.TokenAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
     ),
-    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
-    "DEFAULT_FILTER_BACKENDS": ("django_filters.rest_framework.DjangoFilterBackend",),
+    "DEFAULT_PERMISSION_CLASSES": (
+        "rest_framework.permissions.IsAuthenticated",
+        # "rest_framework.permissions.AllowAny",
+        ),
+    "DEFAULT_FILTER_BACKENDS": (
+        "rest_framework.filters.SearchFilter",
+        "django_filters.rest_framework.DjangoFilterBackend",
+        "rest_framework.filters.OrderingFilter",
+    ),
 }
 
 REST_AUTH_SERIALIZERS = {
@@ -161,5 +171,5 @@ REST_AUTH_SERIALIZERS = {
 SITE_ID = 1
 
 
-# additional stuff
+# your stuff
 # ------------------------------------------------------------------------------

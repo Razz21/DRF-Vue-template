@@ -6,8 +6,6 @@ const PasswordReset = () => import("../components/Auth/PasswordReset.vue");
 const PasswordResetCommit = () =>
   import("../components/Auth/PasswordResetCommit.vue");
 const PasswordConfirm = () => import("../components/Auth/PasswordConfirm.vue");
-// import Login from "../components/Auth/Login.vue";
-// import Register from "../components/Auth/Register.vue";
 
 
 export const authRoutes = [
