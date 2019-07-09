@@ -1,0 +1,17 @@
+[run]
+include = project/*
+
+omit =
+  *__init__.py,
+  *apps.py,
+  *migrations/*,
+  *settings*,
+  *tests/*,
+  *wsgi
+  *wsgi.py,
+  frontend/*,
+  .env,
+  manage.py
+
+plugins =
+    django_coverage_plugin

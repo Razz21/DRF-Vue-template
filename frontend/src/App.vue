@@ -4,7 +4,9 @@
     <v-app>
         <Navbar />
         <v-content app>
+          <v-container class="px-0">
           <router-view></router-view>
+          </v-container>
         </v-content>
         <Footer />
     </v-app>
@@ -55,5 +57,10 @@ export default {
 .toast-container {
   left: 50%;
   transform: translate(-50%);
+}
+
+
+.container{
+  max-width: 900px !important
 }
 </style>

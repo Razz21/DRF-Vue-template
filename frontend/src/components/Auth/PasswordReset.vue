@@ -1,7 +1,7 @@
 <template>
   <Form>
     <template #title>Forgot Password</template>
-    <template #text>Your Email address</template>
+    <template #text>Type your email address</template>
     <template #form>
       <v-form @submit.prevent="reset">
         <v-text-field
@@ -15,7 +15,7 @@
         ></v-text-field>
         <v-spacer></v-spacer>
         <v-card-text>
-          <v-btn large block color="info" type="submit" :loading="authStatus=='loading'">Send</v-btn>
+          <v-btn block color="info" type="submit" :loading="authStatus=='loading'">Send</v-btn>
         </v-card-text>
       </v-form>
     </template>
@@ -29,15 +29,15 @@ export default {
   components: { Form },
   data() {
     return {
-      email: "",
+      email: ""
     };
   },
   methods: {
     reset() {
       this.$validator.validateAll().then(result => {
         if (result) {
-            const {email} = this
-          this.$store.dispatch("resetPassword", {email});
+          const { email } = this;
+          this.$store.dispatch("resetPassword", { email });
         }
       });
     }

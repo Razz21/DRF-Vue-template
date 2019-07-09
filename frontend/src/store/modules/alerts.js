@@ -33,7 +33,7 @@ const mutations = {
     for (let i in msg) {
       const title = i === "non_field_errors" ? "Error" : i;
       console.log(msg[i])
-      vm.$vueOnToast.pop(state.type, title, msg[i]+'');
+      vm.$vueOnToast.pop(state.type, title, msg[i]+'\n');
     }
   }
 };

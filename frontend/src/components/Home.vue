@@ -1,6 +1,6 @@
 <template>
-   <v-container fill-height fluid>
-    Home page
+  <v-container class="px-0">
+    <div>Home page</div>
   </v-container>
 </template>
 

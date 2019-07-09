@@ -33,7 +33,7 @@
         </p>
 
         <v-card-text>
-          <v-btn large block color="info" type="submit" :loading="authStatus=='loading'">Login</v-btn>
+          <v-btn block color="info" type="submit" :loading="authStatus=='loading'">Login</v-btn>
         </v-card-text>
       </v-form>
     </template>

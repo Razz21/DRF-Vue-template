@@ -1,33 +1,36 @@
 <template>
   <nav style="z-index:10">
-    <v-toolbar flat app prominent>
-      <v-toolbar-side-icon v-if="isAuthenticated" class="grey--text" @click="drawer = !drawer"></v-toolbar-side-icon>
-      <v-toolbar-title>
-        <router-link :to="{ name: 'home' }" class="text-uppercase grey--text">
-          <span class="font-weight-light">page</span>
-          <span>title</span>
-        </router-link>
-      </v-toolbar-title>
+    <v-toolbar flat app dense>
+      <v-container fill-height class="pa-0 navbar">
+        <v-toolbar-side-icon v-if="isAuthenticated" class="grey--text" @click="drawer = !drawer"></v-toolbar-side-icon>
 
-      <v-spacer></v-spacer>
-      
-      <v-toolbar-items v-if="isAuthenticated">
-        <v-btn flat color="grey" @click="logout">
-          <span v-if="$vuetify.breakpoint.smAndUp">Sign out</span>
-          <v-icon right>exit_to_app</v-icon>
-        </v-btn>
-      </v-toolbar-items>
-      <v-toolbar-items v-else>
-        <v-btn flat color="grey" :to="{ name: 'login' }">
-          <span>Login</span>
-        </v-btn>
-        <v-btn flat color="#25aad9" :to="{ name: 'register' }">
-          <span>Register</span>
-        </v-btn>
-      </v-toolbar-items>
+        <v-toolbar-title>
+          <router-link :to="{ name: 'home' }" class="text-uppercase grey--text">
+            <span class="font-weight-light">My</span>
+            <span>page</span>
+          </router-link>
+        </v-toolbar-title>
+
+        <v-spacer></v-spacer>
+
+        <v-toolbar-items v-if="isAuthenticated">
+          <v-btn flat color="grey" @click="logout">
+            <span v-if="$vuetify.breakpoint.smAndUp">Sign out</span>
+            <v-icon right>exit_to_app</v-icon>
+          </v-btn>
+        </v-toolbar-items>
+        <v-toolbar-items v-else>
+          <v-btn flat color="grey" :to="{ name: 'login' }">
+            <span>Login</span>
+          </v-btn>
+          <v-btn flat color="#25aad9" :to="{ name: 'register' }">
+            <span>Register</span>
+          </v-btn>
+        </v-toolbar-items>
+      </v-container>
     </v-toolbar>
 
-     <v-navigation-drawer v-model="drawer" app v-if="isAuthenticated">
+    <v-navigation-drawer v-model="drawer" app v-if="isAuthenticated">
       <v-layout column align-center>
         <v-flex class="mt-5">
           <v-avatar size="100">
@@ -49,7 +52,6 @@
         </v-list-tile>
       </v-list>
     </v-navigation-drawer>
-
   </nav>
 </template>
 
@@ -59,9 +61,7 @@ export default {
   data() {
     return {
       drawer: false,
-       Links: [
-        { title: "Profile", icon: "account_box", link: { name: "home" } }
-      ]
+      Links: [{ title: "Profile", icon: "account_box", link: { name: "home" } }]
     };
   },
   methods: {
@@ -69,15 +69,15 @@ export default {
       this.$store.dispatch("logout").then(() => {
         this.$router.replace("/");
       });
-    },
+    }
   },
   computed: {
-    ...mapGetters(["isAuthenticated", "User"]),
+    ...mapGetters(["isAuthenticated", "User"])
   }
 };
 </script>
 
-<style scoped>
+<style >
 .guestLinks {
   display: flex;
 }
@@ -88,4 +88,9 @@ export default {
 .item {
   outline: none;
 }
+
+.v-toolbar__content{
+  justify-content: center;
+}
+
 </style>

@@ -15,7 +15,7 @@
 
         <v-text-field
           v-model="password1"
-          v-validate="'required|min:5'"
+          v-validate="{required:true, min:8}"
           color="cyan darken"
           :loading="password1.length>4"
           counter
@@ -24,7 +24,7 @@
           :error-messages="errors.collect('password1')"
           data-vv-name="password1"
           label="Password"
-          hint="At least 5 characters"
+          hint="At least 8 characters"
           @click:append="show = !show"
           ref="password1"
           required
@@ -59,7 +59,7 @@
         ></v-text-field>
 
         <v-card-text>
-          <v-btn block large color="info" type="submit" :loading="authStatus=='loading'">Sign up</v-btn>
+          <v-btn block color="info" type="submit" :loading="authStatus=='loading'">Sign up</v-btn>
         </v-card-text>
       </v-form>
     </template>
@@ -88,14 +88,13 @@ export default {
       email: "",
       dictionary: {
         custom: {
-
           password1: {
             required: () => "This field is required",
-            min: () => "Password must be at least 5 characters long",
+            min: () => "Password must be at least 8 characters long"
           },
           password2: {
             confirmed: () => "Passwords did not match",
-            required: () => "This field is required",
+            required: () => "This field is required"
           }
         }
       }
@@ -118,8 +117,24 @@ export default {
   },
   computed: {
     ...mapGetters(["authStatus"]),
+    passwordStrength() {
+      const strongRegex = new RegExp(
+        "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})"
+      );
+      const mediumRegex = new RegExp("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])");
+      if (strongRegex.test(this.password1)) {
+        return this.password1.length * 0.7;
+      } else if (mediumRegex.test(this.password1)) {
+        return this.password1.length * 0.4;
+      } else {
+        return this.password1.length * 0.1;
+      }
+    },
     progress() {
-      return Math.min(100, this.password1.length * 10-40);
+      if (this.password1.length >= 8) {
+        return Math.min(100, this.passwordStrength * 10);
+      }
+      return 0;
     },
     color() {
       return ["error", "warning", "success"][Math.floor(this.progress / 40)];

@@ -31,7 +31,7 @@
         ></v-text-field>
         <v-spacer></v-spacer>
         <v-card-text>
-          <v-btn large block color="info" type="submit" :loading="authStatus=='loading'">Submit</v-btn>
+          <v-btn  block color="info" type="submit" :loading="authStatus=='loading'">Submit</v-btn>
         </v-card-text>
       </v-form>
     </template>

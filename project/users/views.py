@@ -3,7 +3,7 @@ from django.contrib.auth import logout as django_logout
 from django.contrib.auth.signals import user_logged_out
 from django.conf import settings
 
-from rest_framework import generics, permissions,viewsets,status
+from rest_framework import generics, permissions, viewsets, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -23,6 +23,7 @@ from .utils import create_knox_token
 
 
 User = get_user_model()
+
 
 class LoginView(LoginView):
     def get_response(self):
@@ -56,7 +57,6 @@ class UserAPI(generics.RetrieveAPIView):
         return self.request.user
 
 
-
 class TokenSessionLogoutView(LogoutView):
     def post(self, request, format=None):
         request._auth.delete()
@@ -75,12 +75,12 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = (permissions.IsAuthenticated,)
-
+    # permission_classes = (permissions.IsAuthenticated,)
 
 
 class ValidateUsername(APIView):
     permission_classes = ()
+
     def post(self, request, *args, **kwargs):
         username = request.data.get("username", None)
         data = {"is_taken": User.objects.filter(username__iexact=username).exists()}

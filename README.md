@@ -7,7 +7,7 @@ This project is broken into a Django/DRF backend and Vue frontend.
 Clone repository:
 
 ```sh
-git clone //TODO repo
+git clone https://github.com/Razz21/DRF-Vue-template.git
 ```
 
 1. Create and activate environment:
