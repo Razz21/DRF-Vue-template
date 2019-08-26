@@ -10,6 +10,7 @@ omit =
   *wsgi
   *wsgi.py,
   frontend/*,
+  htmlcov/*,
   .env,
   manage.py
 

@@ -2,66 +2,75 @@
   <Form>
     <template #title>Sign up</template>
     <template #form>
-      <v-form @submit.prevent="register">
-        <v-text-field
-          v-model="username"
-          v-validate="'required|unique'"
-          counter
-          :error-messages="errors.collect('username')"
-          label="Username"
-          data-vv-name="username"
-          required
-        ></v-text-field>
+      <ValidationObserver ref="observer" v-slot="{ valid }" tag="form" @submit.prevent="register">
+        <ValidationProvider rules="required|unique" name="username">
+          <v-text-field
+            slot-scope="{errors}"
+            :error-messages="errors"
+            v-model="username"
+            label="Username"
+            counter
+          ></v-text-field>
+        </ValidationProvider>
 
-        <v-text-field
-          v-model="password1"
-          v-validate="{required:true, min:8}"
-          color="cyan darken"
-          :loading="password1.length>4"
-          counter
-          :append-icon="show ? 'visibility' : 'visibility_off'"
-          :type="show ? 'text' : 'password'"
-          :error-messages="errors.collect('password1')"
-          data-vv-name="password1"
-          label="Password"
-          hint="At least 8 characters"
-          @click:append="show = !show"
-          ref="password1"
-          required
-        >
-          <template v-slot:progress>
-            <v-progress-linear v-if="password1.length" :value="progress" :color="color" height="3"></v-progress-linear>
-          </template>
-        </v-text-field>
+        <ValidationProvider rules="required|min:8" name="password" vid="confirmation">
+          <v-text-field
+            slot-scope="{errors}"
+            :error-messages="errors"
+            v-model="password1"
+            :loading="password1.length>4"
+            counter
+            :append-icon="show ? 'visibility' : 'visibility_off'"
+            :type="show ? 'text' : 'password'"
+            label="Password"
+            hint="At least 8 characters"
+            @click:append="show = !show"
+          >
+            <template v-slot:progress>
+              <v-progress-linear
+                v-if="password1.length"
+                :value="progress"
+                :color="color"
+                height="3"
+              ></v-progress-linear>
+            </template>
+          </v-text-field>
+        </ValidationProvider>
 
-        <v-text-field
-          v-model="password2"
-          v-validate="'required|confirmed:password1'"
-          counter
-          :append-icon="show1 ? 'visibility' : 'visibility_off'"
-          :type="show1 ? 'text' : 'password'"
-          :error-messages="errors.collect('password2')"
-          data-vv-name="password2"
-          label="Confirm password"
-          hint="Type password again"
-          @click:append="show1 = !show1"
-          required
-        ></v-text-field>
+        <ValidationProvider rules="required|confirmed:confirmation" name="password">
+          <v-text-field
+            slot-scope="{errors}"
+            :error-messages="errors"
+            v-model="password2"
+            counter
+            :append-icon="show1 ? 'visibility' : 'visibility_off'"
+            :type="show1 ? 'text' : 'password'"
+            label="Confirm password"
+            hint="Type password again"
+            @click:append="show1 = !show1"
+          ></v-text-field>
+        </ValidationProvider>
 
-        <v-text-field
-          v-model="email"
-          v-validate="'required|email'"
-          type="email"
-          :error-messages="errors.collect('email')"
-          data-vv-name="email"
-          label="Email"
-          required
-        ></v-text-field>
+        <ValidationProvider rules="required|email" name="email">
+          <v-text-field
+            slot-scope="{errors}"
+            :error-messages="errors"
+            v-model="email"
+            type="email"
+            label="Email"
+          ></v-text-field>
+        </ValidationProvider>
 
         <v-card-text>
-          <v-btn block color="info" type="submit" :loading="authStatus=='loading'">Sign up</v-btn>
+          <v-btn
+            block
+            color="info"
+            :disabled="!valid"
+            type="submit"
+            :loading="authStatus=='loading'"
+          >Sign up</v-btn>
         </v-card-text>
-      </v-form>
+      </ValidationObserver>
     </template>
 
     <template #action>
@@ -76,43 +85,40 @@
 <script>
 import Form from "./Form.vue";
 import { mapGetters } from "vuex";
+import { ValidationObserver } from "vee-validate/dist/vee-validate.full";
 export default {
-  components: { Form },
+  components: { Form, ValidationObserver },
   data() {
     return {
+      valid: true,
       show: false,
       show1: false,
       username: "",
       password1: "",
       password2: "",
-      email: "",
-      dictionary: {
-        custom: {
-          password1: {
-            required: () => "This field is required",
-            min: () => "Password must be at least 8 characters long"
-          },
-          password2: {
-            confirmed: () => "Passwords did not match",
-            required: () => "This field is required"
-          }
-        }
-      }
+      email: ""
     };
   },
   methods: {
     register() {
-      this.$validator.validateAll().then(result => {
-        if (result) {
-          const { username, password1, password2, email } = this;
-          this.$store.dispatch("register", {
-            username,
-            password1,
-            password2,
-            email
-          });
-        }
-      });
+      const isValid = this.$refs.observer.validate();
+      if (isValid) {
+        const { username, password1, password2, email } = this;
+        this.$store.dispatch("register", {
+          username,
+          password1,
+          password2,
+          email
+        });
+        this.username = "";
+        this.password1 = "";
+        this.password2 = "";
+        this.email = "";
+        requestAnimationFrame(() => {
+          // https://baianat.github.io/vee-validate/guide/validation-observer.html#examples
+          this.$refs.observer.reset();
+        });
+      }
     }
   },
   computed: {
@@ -139,9 +145,6 @@ export default {
     color() {
       return ["error", "warning", "success"][Math.floor(this.progress / 40)];
     }
-  },
-  mounted() {
-    this.$validator.localize("en", this.dictionary);
   }
 };
 </script>

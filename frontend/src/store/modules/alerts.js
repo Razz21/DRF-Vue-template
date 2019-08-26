@@ -4,36 +4,32 @@ import { prepareAlertType } from "../utils";
 const state = {
   messages: {},
   status: null,
-  type: null
+  config: {}
 };
 
 const getters = {
   messages: state => state.messages,
-  getType: state => state.type
+  getType: state => state.color
 };
 const actions = {
-  populateAlert: ({ commit }, config) => {
-    // console.log(config);
-    if (!config.type) {
-      config["type"] = prepareAlertType(config.status);
+  populateAlert: ({ commit }, data) => {
+    if (!data['config']['color']) {
+      data['config']["color"] = prepareAlertType(data.status);
     }
-    commit("addAlert", config);
+    commit("addAlert", data);
     commit("popAlert");
   }
 };
 
 const mutations = {
-  addAlert: (state, config) => {
-    Object.assign(state, config);
+  addAlert: (state, data) => {
+    Object.assign(state, data);
   },
 
   popAlert: state => {
     const msg = state.messages;
-    
     for (let i in msg) {
-      const title = i === "non_field_errors" ? "Error" : i;
-      console.log(msg[i])
-      vm.$vueOnToast.pop(state.type, title, msg[i]+'\n');
+      vm.$toast(msg[i]+'', { ...state.config });
     }
   }
 };

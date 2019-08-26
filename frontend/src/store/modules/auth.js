@@ -11,7 +11,7 @@ const state = {
 const getters = {
   isAuthenticated: state => !!state.user && !!state.token,
   authStatus: state => state.status,
-  User: state => state.user,
+  User: state => state.user
 };
 
 const actions = {
@@ -20,7 +20,6 @@ const actions = {
     axios
       .get("/api/auth/user/")
       .then(resp => {
-        console.log(resp.data)
         commit("auth_success", resp.data);
       })
       .catch(() => {
@@ -37,13 +36,7 @@ const actions = {
         vm.$router.replace(vm.$route.query.redirect || { name: "home" });
       })
       .catch(err => {
-        commit("auth_error");
-        const errors = {
-          // type:'error',
-          messages: err.response.data,
-          status: err.response.status
-        };
-        dispatch("populateAlert", errors);
+        dispatch("authAlert", err);
       });
   },
 
@@ -53,14 +46,10 @@ const actions = {
       .post("/api/auth/logout/", null)
       .then(() => {
         commit("logout_success");
+        vm.$disconnect();
       })
       .catch(err => {
-        commit("auth_error");
-        const errors = {
-          messages: err.response.data,
-          status: err.response.status
-        };
-        dispatch("populateAlert", errors);
+        dispatch("authAlert", err);
       });
   },
 
@@ -75,12 +64,7 @@ const actions = {
         vm.$router.replace({ name: "home" });
       })
       .catch(err => {
-        commit("auth_error");
-        const errors = {
-          messages: err.response.data,
-          status: err.response.status
-        };
-        dispatch("populateAlert", errors);
+        dispatch("authAlert", err);
       });
   },
   resetPassword({ commit, dispatch }, email) {
@@ -93,12 +77,7 @@ const actions = {
         vm.$router.replace({ name: "reset_password_commit" });
       })
       .catch(err => {
-        commit("auth_error");
-        const errors = {
-          messages: err.response.data,
-          status: err.response.status
-        };
-        dispatch("populateAlert", errors);
+        dispatch("authAlert", err);
       });
   },
   confirmPassword({ commit, dispatch }, data) {
@@ -106,29 +85,23 @@ const actions = {
     commit("auth_request");
     axios
       .post("/api/auth/password/reset/confirm/", body)
-      .then(resp => {
+      .then(() => {
         commit("password_reset_success");
-        console.log("resp", resp);
-        // const msg = {
-        //   status: resp.status,
-        //   messages: resp.data
-        // };
-        // dispatch("populateAlert", msg);
-        vm.$vueOnToast.pop(
-          "success",
-          "Success",
-          "Password has been reset with the new password."
-        );
         vm.$router.replace({ name: "login" });
       })
       .catch(err => {
-        commit("auth_error");
-        const errors = {
-          messages: err.response.data,
-          status: err.response.status
-        };
-        dispatch("populateAlert", errors);
+        dispatch("authAlert", err);
       });
+  },
+
+  authAlert({ commit, dispatch }, data) {
+    commit("auth_error");
+    const alert = {
+      messages: data.response.data,
+      status: data.response.status,
+      config: { x: "right", y: "top", queueable: true }
+    };
+    dispatch("populateAlert", alert);
   }
 };
 
